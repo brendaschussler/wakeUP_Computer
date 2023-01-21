@@ -10,6 +10,29 @@
 #define DISCOVERY_TYPE 1
 #define CONFIRMED_TYPE 2
 
+//function to serialize the struct
+unsigned char *serialize_struct(participant *data)
+{
+    // Alocate memory for all fields in the struct
+    unsigned char *buffer = (unsigned char *)malloc(sizeof(char) * 256 + sizeof(char) * 16 + sizeof(char) * 18 + sizeof(int));
+    memcpy(buffer, &data->hostname, sizeof(char) * 256);
+    memcpy(buffer + sizeof(char) * 256, data->ip_address, sizeof(char) * 16);
+    memcpy(buffer + sizeof(char) * 256 + sizeof(char) * 16, &data->mac_address, sizeof(char) * 18);
+    memcpy(buffer + sizeof(char) * 256 + sizeof(char) * 16 + sizeof(char) * 18, &data->status, sizeof(int));
+    return buffer;
+}
+
+//function to deserialize the struct
+participant *deserialize_struct(unsigned char *buffer)
+{
+    participant *data = (participant *)malloc(sizeof(participant));
+    memcpy(&data->hostname, buffer, sizeof(char) * 256);
+    memcpy(data->ip_address, buffer + sizeof(char) * 256, sizeof(char) * 16);
+    memcpy(&data->mac_address, buffer + sizeof(char) * 256 + sizeof(char) * 16, sizeof(char) * 18);
+    memcpy(&data->status, buffer + sizeof(char) * 256 + sizeof(char) * 16 + sizeof(char) * 18, sizeof(int));
+    return data;
+}
+
 // Function to send a discovery message
 void send_discovery_msg(int sockfd, struct sockaddr_in *addr, socklen_t len)
 {
